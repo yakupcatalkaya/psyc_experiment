@@ -5,13 +5,11 @@ Created on Tue Aug 18 02:22:54 2020
 @author: yakupcatalkaya
 """
 
-
 import pygame as pyg
 import csv
 import random
 import hashlib
 import time
-
 
 running = True
 id_num=""
@@ -21,7 +19,6 @@ program_clock=time.time()
 def get_windows_size():    
     width,height=pyg.display.Info().current_w,pyg.display.Info().current_h
     return width,height
-
 
 def waiting():
     for attempt in range(99):
@@ -45,19 +42,16 @@ def stimuli_scaler(size):
     width,height=size
     scale_w,scale_h=width/default_w,height/default_h
     return (scale_w,scale_h)
-
     
 def get_font(font_type="comicsansms",size=14):
     font = pyg.font.SysFont(font_type,size)
     return font
-
 
 def create_text(texts,color=(255, 255, 255),size=14,font_type="comicsansms"):
     size=int(size*((scale_x*scale_y)**(1/2)))
     texts= get_font(font_type,size).render(str(texts), True, color)
     return texts
 
-    
 
 def show_stimuli(source,up=0,left=0): 
     w,h=default_w,default_h
@@ -66,16 +60,14 @@ def show_stimuli(source,up=0,left=0):
     area=(-(int(left*scale_x))+int(w*scale_x)//2- x//2,-(int(up*scale_y))+int(h*scale_y)//2- y//2)
     screen.blit(source,area)
     
-
 def first_screen():
     text2=create_text(texts="Welcome to the experiment",size=54)
-    text3=create_text(texts="The experiment is designed by mrjacob")
+    text3=create_text(texts="The experiment is build by UMRAM Farooqui's Lab")
     screen.fill(black)  
     show_stimuli(text2)
     show_stimuli(text3,up=-520,left=-820)
     update_screen()
     pyg.time.delay(1000)
-
 
 def empty_screen():
     global background
@@ -83,7 +75,6 @@ def empty_screen():
     screen.fill(black)
     update_screen()
     
-
 def checking():
     for event in pyg.event.get():
         if event.type == pyg.QUIT:
@@ -96,7 +87,6 @@ def checking():
                 exit_screen()
             elif event.key == pyg.K_SPACE:
                 return False
-
 
 def start_and_scale():
     global scale_x,scale_y,win_size,screen,title,black,white,default_w,default_h
@@ -114,10 +104,8 @@ def start_and_scale():
     screen = pyg.display.set_mode(win_size,pyg.FULLSCREEN)  #  (win_size,pyg.FULLSCREEN)   #(672,378)
     scale_x,scale_y=stimuli_scaler(win_size)
     
-
 def update_screen():
     pyg.display.update()
-
 
 def random_number_list():
     vowel_list=[]
@@ -133,7 +121,6 @@ def random_number_list():
     templist=vowel_list+consonant_list
     random.shuffle(templist)
     atemplist=templist[:]
-    
     indexlist=list(range(9,153,9))
     count=0
     for index in indexlist:
@@ -148,7 +135,7 @@ def random_number_list():
     count=0  
     for index in indexlist:
         atemplist.insert(index+count,"gap")
-        count+=1    
+        count+=1
     count=0
     for letter in templist:
         if count%10==0 and count!=0:
@@ -181,11 +168,6 @@ def experiment_screen(ready=True):
         if item=="gap":
             repeat=break_screen(typo="set")
             timelist.append(repeat)
-            # for a in range(99):
-            #     screen.fill(black)
-            #     update_screen()
-            #     checking()
-            #     pyg.time.delay(10)
             global_list.append(["gap","gap","gap","gap","gap",str(repeat*10)+" ms has been spend."])
             pyg.time.delay(1000)
         else:
@@ -267,7 +249,6 @@ def experiment_screen(ready=True):
             global_list.append([item,state,error,score,miss,react_time])
             
             
-
 def show_fixation(item,colour=(255,255,255)):
     screen.fill(black)        
     show_stimuli(create_text(texts=str("+"),color=colour,size=154))
@@ -275,8 +256,6 @@ def show_fixation(item,colour=(255,255,255)):
     state=is_true(item,49)
     return state
     
-    
-
 def is_true(item,onestimuli):
     vowels="A E I O U".split()
     for trial in range(onestimuli):
@@ -301,7 +280,6 @@ def is_true(item,onestimuli):
         pyg.time.delay(10)
     return "None"
 
-
 def exit_screen():
     global global_list
     done=False
@@ -321,7 +299,6 @@ def exit_screen():
                     pyg.quit()
         pyg.time.delay(95)
     pyg.quit()
-
 
 def break_screen(typo="session"):
     screen.fill(black)
@@ -393,7 +370,6 @@ def subject_sign():
         show_stimuli(text3,up=-100,left=280)
         update_screen()
 
-
 def create_csv_file(global_list):
     global signed,id_num
     if signed is True:
@@ -416,8 +392,6 @@ def create_csv_file(global_list):
             line.append(checksum)          
             rw.writerow(line)
             
-
-
 def main():
     start_and_scale()
     subject_sign()
@@ -433,7 +407,6 @@ def main():
         ready=False
     pyg.time.delay(1000)
     exit_screen()
-
 
 main()
 pyg.quit()
