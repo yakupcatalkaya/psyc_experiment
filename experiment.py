@@ -5,21 +5,17 @@ Created on Tue Aug 18 02:22:54 2020
 @author: yakupcatalkaya
 """
 
-
 import pygame as pyg
 import csv
 import random
 import hashlib
 import time
 import os
-
-
 running = True
 id_num=""
 global_list=[]
 program_clock=time.time()
 directory=os.getcwd()
-
 def get_windows_size():    
     width,height=pyg.display.Info().current_w,pyg.display.Info().current_h
     return width,height
@@ -130,7 +126,7 @@ def random_number_list():
     templist=number_list+letter_list
     random.shuffle(templist)
     atemplist=templist[:]
-    ##########################
+    
     indexlist=list(range(9,153,9))
     count=0
     for index in indexlist:
@@ -169,8 +165,64 @@ def random_number_list():
         count+=1 
     return templist,atemplist
 
+def again_again(item_i,error_i,score_i,miss_i):
+    letters="A B C D E F G H I K L M N P Q R S T V X Y Z".split()
+    done=False
+    stimuli_start=time.time()
+    for step in range(39):
+        screen.fill(black)        
+        show_stimuli(create_text(texts=str(item_i),size=154))
+        update_screen()
+        state=is_true(item_i,1)
+        if state==True:
+            error_i+=1
+            stimuli_stop=time.time()
+            step=step
+            done=True
+            break
+        elif state==False:
+            score_i+=1
+            stimuli_stop=time.time()
+            step=step
+            done=True
+            break
+    if done:
+        screen.fill(black)        
+        show_stimuli(create_text(texts=str(item_i),size=154))
+        update_screen()
+        pyg.time.delay(int(18-step)*10+1)
+        show_fixation(item_i,just=False)
+    elif not done:
+        for a in range(69):
+            countiii=a
+            state=show_fixation(item_i)
+            if state==True:
+                error_i+=1
+                stimuli_stop=time.time()
+                break
+            elif state==False:
+                score_i+=1
+                stimuli_stop=time.time()
+                break
+        if state=="None":
+            if item_i in letters:
+                miss_i+=1
+            if item_i not in letters:
+                error_i+=1
+            stimuli_stop=time.time()
+        pyg.time.delay((68-countiii)*10+1)
+    react_time_i=str(int((stimuli_stop-stimuli_start)*1000)) 
+    if int(react_time_i)<100:
+        if state==True:error_i-=1
+        elif state==False:score_i-=1
+        elif state=="None" and item_i not in letters: error_i-=1
+        elif state=="None" and item_i in letters: miss_i-=1
+        state,error_i,score_i,miss_i,react_time_i=again_again(item_i,error_i,score_i,miss_i)
+    return state,error_i,score_i,miss_i,react_time_i
+
 
 def experiment_screen(ready=True):
+    letters="A B C D E F G H I K L M N P Q R S T V X Y Z".split()
     count_session_regular=1
     count_session_random=1
     global global_list
@@ -178,7 +230,6 @@ def experiment_screen(ready=True):
     score,error,miss=0,0,0
     timelist=[]
     pyg.time.delay(1000)   
- 
     for event in pyg.event.get():
         if event.type == pyg.QUIT:
             pyg.quit()
@@ -197,7 +248,7 @@ def experiment_screen(ready=True):
         else:
             done=False
             stimuli_start=time.time()
-            for step in range(19):
+            for step in range(39):
                 screen.fill(black)        
                 show_stimuli(create_text(texts=str(item),size=154))
                 update_screen()
@@ -221,7 +272,7 @@ def experiment_screen(ready=True):
                 pyg.time.delay(int(18-step)*10+1)
                 show_fixation(item,just=False)
             elif not done:
-                for a in range(49):
+                for a in range(69):
                     countiii=a
                     state=show_fixation(item)
                     if state==True:
@@ -233,12 +284,20 @@ def experiment_screen(ready=True):
                         stimuli_stop=time.time()
                         break
                 if state=="None":
-                    miss+=1
+                    if item in letters:
+                        miss+=1
+                    if item not in letters:
+                        error+=1
                     stimuli_stop=time.time()
-                pyg.time.delay((48-countiii)*10+1)
-            react_time=str(int((stimuli_stop-stimuli_start)*1000))   
+                pyg.time.delay((68-countiii)*10+1)
+            react_time=str(int((stimuli_stop-stimuli_start)*1000))
+            if int(react_time)<100:
+                if state==True:error-=1
+                elif state==False:score-=1
+                elif state=="None" and item not in letters: error-=1
+                elif state=="None" and item in letters: miss-=1
+                state,error,score,miss,react_time=again_again(item,error,score,miss)
             global_list.append([item,state,error,score,miss,react_time,"regular",count_session_regular])
-  
     break_screen()
     counti=0
     for item in exp2:
@@ -254,7 +313,7 @@ def experiment_screen(ready=True):
         else:
             done=False
             stimuli_start=time.time()
-            for step in range(19):
+            for step in range(39):
                 screen.fill(black)        
                 show_stimuli(create_text(texts=str(item),size=154))
                 update_screen()
@@ -278,7 +337,7 @@ def experiment_screen(ready=True):
                 pyg.time.delay(int(18-step)*10+1)
                 show_fixation(item,just=False)
             elif not done:
-                for a in range(49):
+                for a in range(69):
                     countiii=a
                     state=show_fixation(item)
                     if state==True:
@@ -290,11 +349,20 @@ def experiment_screen(ready=True):
                         stimuli_stop=time.time()
                         break
                 if state=="None":
-                    miss+=1
+                    if item in letters:
+                        miss+=1
+                    if item not in letters:
+                        error+=1
                     stimuli_stop=time.time()
-                pyg.time.delay((48-countiii)*10+1)
+                pyg.time.delay((68-countiii)*10+1)
             react_time=str(int((stimuli_stop-stimuli_start)*1000))   
-            global_list.append([item,state,error,score,miss,react_time,"regular",count_session_regular])
+            if int(react_time)<100:
+                if state==True:error-=1
+                elif state==False:score-=1
+                elif state=="None" and item not in letters: error-=1
+                elif state=="None" and item in letters: miss-=1
+                state,error,score,miss,react_time=again_again(item,state,error,score,miss)
+            global_list.append([item,state,error,score,miss,react_time,"random",count_session_random])
                 
 
 def show_fixation(item,colour=(255,255,255),just=True):
@@ -302,7 +370,7 @@ def show_fixation(item,colour=(255,255,255),just=True):
     show_stimuli(create_text(texts=str("+"),color=colour,size=154))
     update_screen()
     if not just:
-        pyg.time.delay(490)
+        pyg.time.delay(690)
     if just:
         state=is_true(item,1)
         return state
@@ -372,6 +440,7 @@ def break_screen(typo="session"):
                 if event.key == pyg.K_ESCAPE:
                     exit_screen()
                 elif event.key == pyg.K_SPACE:
+                    pyg.time.delay(300)
                     return int(repeat)
                     break
         pyg.time.delay(9)
@@ -380,19 +449,13 @@ def break_screen(typo="session"):
 
 def instruction_screen():
     screen.fill(black)
-    show_stimuli(create_text(texts="The Instructions",size=54),up=290)
-    show_stimuli(create_text(texts="-------------------------------------------",size=54),up=250,left=0)
-    show_stimuli(create_text(texts="1)  In experiment, there are 17 set and in each set there are 9 stimuli.",size=24),up=190,left=10)
-    show_stimuli(create_text(texts="2)  Participant should press down arrow key when a letter is appeared in the screen.",size=24),up=130,left=-65)
-    show_stimuli(create_text(texts="3)  For numbers,do nothing. ",size=24),up=70,left=250)
-    show_stimuli(create_text(texts="4)  There are 10 sessions [5 from each type] in the experiment. ",size=24),up=10,left=50)
-    show_stimuli(create_text(texts="5)  Press space button to continue the experiment . ",size=24),up=-50,left=120)
-    show_stimuli(create_text(texts="Talimatlar",size=54),up=-120)
-    show_stimuli(create_text(texts="-------------------------------------------",size=54),up=-180,left=0)
-    show_stimuli(create_text(texts="1) Ekranda bir harf gördüğünüzde aşağı ok tuşuna basınız.",size=24),up=-240,left=95)
-    show_stimuli(create_text(texts="2) Ekranda bir rakam gördüğünüzde hiçbir tuşa basmayınız.",size=24),up=-300,left=90)
-    show_stimuli(create_text(texts="3) Deney, kısa görevler ve uzun görevler olmak üzere toplam 10 seanstan oluşmaktadır.",size=24),up=-360,left=-65)
-    show_stimuli(create_text(texts="4) Lütfen devam etmek için boşluk tuşuna basınız.",size=24),up=-420,left=145)
+    show_stimuli(create_text(texts="The Instructions",size=54),up=190)
+    show_stimuli(create_text(texts="-------------------------------------------",size=54),up=150,left=0)
+    show_stimuli(create_text(texts="1)  In experiment, there are 17 set and in each set there are 9 stimuli.",size=24),up=90,left=10)
+    show_stimuli(create_text(texts="2)  Participant should press down arrow key when a letter is appeared in the screen.",size=24),up=30,left=-65)
+    show_stimuli(create_text(texts="3)  For numbers,do nothing. ",size=24),up=-30,left=250)
+    show_stimuli(create_text(texts="4)  There are 10 sessions [5 from each type] in the experiment. ",size=24),up=-90,left=50)
+    show_stimuli(create_text(texts="5)  Press space button to continue the experiment . ",size=24),up=-150,left=120)
     update_screen()
     while True:
         for event in pyg.event.get():
