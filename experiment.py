@@ -1,16 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Aug 18 02:22:54 2020
-
-@author: yakupcatalkaya
-"""
-
 import pygame as pyg
 import csv
 import random
 import hashlib
 import time
 import os
+
 running = True
 id_num=""
 global_list=[]
@@ -361,7 +355,7 @@ def experiment_screen(ready=True):
                 elif state==False:score-=1
                 elif state=="None" and item not in letters: error-=1
                 elif state=="None" and item in letters: miss-=1
-                state,error,score,miss,react_time=again_again(item,state,error,score,miss)
+                state,error,score,miss,react_time=again_again(item,error,score,miss)
             global_list.append([item,state,error,score,miss,react_time,"random",count_session_random])
                 
 
@@ -428,7 +422,7 @@ def break_screen(typo="session"):
         show_stimuli(create_text(texts="Press space to continue to the long "+str(typo),size=34),up=-50)
         update_screen()
     else:
-        show_stimuli(create_text(texts="Press down arrow key button to everything except numbers",size=54),up=50)
+        show_stimuli(create_text(texts="Press down arrow key button for every letter, do nothing for numbers",size=54),up=50)
         show_stimuli(create_text(texts="Press space to continue to "+str(typo),size=34),up=-50)
         update_screen()
     repeat=0
@@ -440,7 +434,9 @@ def break_screen(typo="session"):
                 if event.key == pyg.K_ESCAPE:
                     exit_screen()
                 elif event.key == pyg.K_SPACE:
-                    pyg.time.delay(300)
+                    screen.fill(black)
+                    update_screen()
+                    pyg.time.delay(1000)
                     return int(repeat)
                     break
         pyg.time.delay(9)
@@ -498,7 +494,7 @@ def subject_sign():
         show_stimuli(text3,up=-100,left=280)
         update_screen()
 
-
+        
 def create_csv_file(global_list):
     global signed,id_num
     print("The data file is at: "+str(directory))
@@ -539,5 +535,6 @@ def main():
     pyg.time.delay(1000)
     exit_screen()
 
+    
 main()
 pyg.quit()
